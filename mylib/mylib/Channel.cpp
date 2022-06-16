@@ -42,6 +42,8 @@ void Channel::handleEvent(Timestamp receiveTime){
         if(guard){
             handleEventWithGuard(receiveTime);
         }
+    }else{
+        handleEventWithGuard(receiveTime);
     }
 }
 
