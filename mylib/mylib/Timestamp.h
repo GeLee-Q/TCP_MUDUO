@@ -1,8 +1,17 @@
-//
-// Created by 86503 on 2022/6/16.
-//
+#pragma once
 
-#ifndef CPP_MUDUO_TIMESTAMP_H
-#define CPP_MUDUO_TIMESTAMP_H
+#include <iostream>
+#include <string>
 
-#endif //CPP_MUDUO_TIMESTAMP_H
+class Timestamp
+{
+public:
+    Timestamp();
+    explicit Timestamp(int64_t microSecondsSinceEpoch);
+    static Timestamp now();
+    std::string toString() const;
+
+private:
+    int64_t microSecondsSinceEpoch_;
+};
+
