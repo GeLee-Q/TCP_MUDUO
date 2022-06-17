@@ -32,7 +32,7 @@ public:
 
 protected:
     using ChannelMap = std::unordered_map<int, Channel *>;
-    ChannelMap Channels_;
+    ChannelMap channels_;
 
 private:
     EventLoop * ownerLoop_; // 定义Poller所属于的事件循环

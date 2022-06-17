@@ -6,9 +6,9 @@ Poller::Poller(EventLoop * loop)
 {}
 
 bool Poller::hasChannel(Channel *channel) const{
-    auto  it = Channels_.find(channel->fd());
+    auto  it = channels_.find(channel->fd());
 
-    if(it == Channels_.end() ){
+    if(it == channels_.end() ){
         return false;
     }
 

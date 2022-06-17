@@ -55,7 +55,7 @@ public:
         return fd_;
     }
 
-    int event() const {
+    int events() const {
         return events_;
     }
 

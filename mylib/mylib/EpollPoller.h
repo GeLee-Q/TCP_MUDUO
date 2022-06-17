@@ -31,6 +31,6 @@ private:
     using EventList = std::vector<epoll_event>;
 
     int epollfd_;        // epoll_create 创建返回的fd保存在epollfd_中
-    EventList events_;   // 用于存放epoll_wait 返回所有事件的文件描述夫
+    EventList events_;   // 用于存放epoll_wait 返回所有事件的文件描述符
     
 };
