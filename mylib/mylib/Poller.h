@@ -19,7 +19,7 @@ public:
     virtual ~Poller() = default;
 
     // 纯虚函数，此类为抽象类，不可以被实例化，必须通过派生类来进行重写
-    virtual Timestamp poll(int timeourMs, ChannelList * activeChannels) = 0;
+    virtual Timestamp poll(int timeoutMs, ChannelList * activeChannels) = 0;
     virtual void updateChannel(Channel * channel) = 0;
     virtual void removeChannel(Channel * channel) = 0;
 
@@ -27,6 +27,7 @@ public:
     bool hasChannel(Channel * channel) const;
 
     //eventloop 可以用过该接口获得默认的IO复用的具体实践
+    //static修饰 没有this指针，不能访问非static数据成员
     static Poller * newDefaultPoller(EventLoop * loop);
 
 protected:
