@@ -31,6 +31,7 @@ public:
     static Poller * newDefaultPoller(EventLoop * loop);
 
 protected:
+    //map 存储epoll中注册过的文件描述符 和 Channel对象
     using ChannelMap = std::unordered_map<int, Channel *>;
     ChannelMap channels_;
 

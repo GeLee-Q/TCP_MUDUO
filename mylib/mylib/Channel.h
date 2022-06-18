@@ -103,6 +103,11 @@ private:
     int events_;        // fd 感兴趣的事件
     int revents_;       // Epoll返回的具体事件
     int index_;
+    /* 用于查看当前文件描述符是否在内核态的epoll中
+    index_ = -1 Channel 没有注册到内核态的Epoll
+           =  1 Channel 已经注册到内核态
+           =  2 Channel 在Epoll中已经被删除了
+     */
 
 
     // 改变弱回调的生命周期的问题
