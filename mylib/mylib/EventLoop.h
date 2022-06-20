@@ -64,7 +64,7 @@ private:
     //给eventfd返回的文件描述符wakeupFd_ 绑定的事件回调
     //当wakeup()有事情发生时 调用handleRead 读wakeupFd_ 同时唤醒阻塞的epoll_wait
     void handleRead();
-    void dePendingFunctors(); // 执行上层回调
+    void doPendingFunctors(); // 执行上层回调
 
     using ChannelList = std::vector<Channel *>;
 
@@ -80,7 +80,7 @@ private:
     当mainloop 获取一个新用户的Channel 通过轮询选择一个subLoop
     通过该成员唤醒subloop来处理Channel
      */
-    int weakupFd_;
+    int wakeupFd_;
     std::unique_ptr<Channel> wakeupChannel_;
 
     //返回Poller检测到的当前有事件发生的Channel
