@@ -20,8 +20,6 @@ class Poller;
 
 class EventLoop: noncopyable{
 
-
-
 public:
     using Functor = std::function<void()>;
 
@@ -38,14 +36,25 @@ public:
         return pollReturnTime_; // q1;
     }
 
+
+/* 
+    runInloop | queueInloop 非常重要
+    
+ */
     // execute in current loop
     void runInLoop(Functor cb);
 
     // 把上层注册的回调函数 cb 放入队列中，唤醒Loop所在的线程执行Cb
     void queueInLoop(Functor cb);
 
+/* 
+    Reactor -> SubReactor() 实现高并发
+    mainReactor 处理接受链接的请求
+    SubReactor 处理事件
+    wakeUp 在epoll_wait 后解除阻塞
+ */
     //通过eventfd唤醒loop所在的线程
-    void wakeUp();
+    void wakeup();
 
     //EventLoop 调用Poller的方法
     void updateChannel(Channel * channel);
@@ -54,6 +63,7 @@ public:
 
 
     //判断EventLoop对象是否在自己的线程里
+    // 但是我可以在其他的线程里调用这个ELoop
     bool isInLoopThread() const{
         return threadId_ == CurrentThread::tid(); 
         // threadId_ 为EventLoop 创建时的线程id 
@@ -88,6 +98,8 @@ private:
 
     // 标识当前loop是否需要执行回调操作
     std::atomic_bool callingPendingFunctors_;
+
+
     //存储loop需要执行的回调函数
     std::vector<Functor> pendingFunctors_;
     std::mutex mutex_; // 保护pendingFunctors_的多线程安全
