@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <mylib/nocopyable.h>
+#include <mylib/noncopyable.h>
 
 
 #define LOG_INFO(logmsgFormat, ...)                       \

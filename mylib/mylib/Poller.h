@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include <mylib/nocopyable.h>
+#include <mylib/noncopyable.h>
 #include <mylib/Timestamp.h>
 #include <mylib/Channel.h>
 

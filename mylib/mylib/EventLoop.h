@@ -8,7 +8,7 @@
 #include <memory>
 #include <mutex>
 
-#include <mylib/nocopyable.h>
+#include <mylib/noncopyable.h>
 #include <mylib/Timestamp.h>
 #include <mylib/CurrentThread.h>
 #include <mylib/Poller.h>
