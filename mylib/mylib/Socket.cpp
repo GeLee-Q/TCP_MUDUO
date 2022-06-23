@@ -13,6 +13,7 @@ Socket::~Socket(){
     ::close(sockfd_);
 }
 
+// Give the socket FD the local address ADDR
 void Socket::bindAddress(const InetAddress &localaddr)
 {
     if( 0 != ::bind(sockfd_, (sockaddr *)localaddr.getSockAddr(), sizeof(sockaddr_in)))
@@ -30,7 +31,9 @@ void Socket::listen()
     }
 }
 
-
+/* 
+    存储到接受到的socket信息
+ */
 int Socket::accept(InetAddress *peeraddr)
 {
     sockaddr_in addr;
@@ -44,6 +47,8 @@ int Socket::accept(InetAddress *peeraddr)
     return connfd;
 }
 
+
+// 关闭服务器的写端
 void Socket::shutDownWrite()
 {
     if(::shutdown(sockfd_, SHUT_WR) < 0){
