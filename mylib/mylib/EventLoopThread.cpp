@@ -8,7 +8,7 @@ EventLoopThread::EventLoopThread(const ThreadInitCallback & cb,
     thread_(std::bind(&EventLoopThread::threadFunc, this), name),
     mutex_(),
     cond_(),
-    callback_(cb)
+    callback_(cb) // 线程初始化的callback
 {
 
 }
@@ -22,24 +22,30 @@ EventLoopThread::~EventLoopThread()
     }
 }
 
+
+/* 
+    返回真实的线程对象的eventloop的指针
+ */
 EventLoop * EventLoopThread::startLoop()
 {
-    thread_.start();
+    thread_.start(); // 启动一个线程
     EventLoop * loop = nullptr;
     {
         std::unique_lock<std::mutex> lock(mutex_);
         while(loop_ == nullptr){
-            cond_.wait(lock);
+            cond_.wait(lock); // 条件变量阻塞在这里
         }
         loop = loop_;
     }
     return loop;
 }
 
+// 给绑定的thread设置回调函数
 void EventLoopThread::threadFunc()
 {
-    EventLoop loop;
+    EventLoop loop;// 与线程中绑定在一起 与子reactor 绑定在一起
     
+    // 线程初始化需要执行的东西
     if(callback_){
         callback_(&loop);
     }
@@ -51,6 +57,8 @@ void EventLoopThread::threadFunc()
     }
 
     loop.loop();
+
+    // 当前的eventloop要关闭了
     std::unique_lock<std::mutex> lock(mutex_);
     loop_ = nullptr;
 }

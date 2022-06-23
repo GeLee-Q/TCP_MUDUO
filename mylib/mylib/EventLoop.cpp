@@ -95,6 +95,7 @@ void EventLoop::quit()
     quit_ = true;
 
     if(!isInLoopThread()){
+        // 解除poll的阻塞
         wakeup();
     }
 }
