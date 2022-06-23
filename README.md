@@ -3,7 +3,8 @@
   - [辅助类：](#辅助类)
     - [nocopyable](#nocopyable)
     - [CheckError | Logger](#checkerror--logger)
-    - [Timestamp- mylib](#timestamp--mylib)
+    - [Timestamp](#timestamp)
+    - [CurrentThead](#currentthead)
   - [顶层设计类：](#顶层设计类)
     - [TcpServer](#tcpserver)
     - [EventLoop](#eventloop)
@@ -11,15 +12,16 @@
     - [Poller](#poller)
     - [EpollPoller](#epollpoller)
     - [Channel](#channel)
+  - [线程类](#线程类)
+    - [Thead](#thead)
+    - [EventLoopThread](#eventloopthread)
+    - [EventLoopThreadPool类](#eventloopthreadpool类)
   - [网络类 && 连接类](#网络类--连接类)
     - [InetAddress](#inetaddress)
     - [Socket](#socket)
     - [Connection](#connection)
     - [Acceptor](#acceptor)
     - [Buffers](#buffers)
-  - [线程类](#线程类)
-    - [CurrentThead](#currentthead)
-
 
 # CMake 工程构建
 
@@ -45,8 +47,14 @@
 - 错误信息处理 写入日志类
 - 行为写入日志类
 
-### Timestamp- [mylib](#mylib)
+### Timestamp
+
 - 返回事件戳，用于记录时间发生节点
+
+### CurrentThead
+
+- 用于辅助EventLoop实现主从Reactor模式
+- 获取线程的pid()
 
 
 
@@ -107,6 +115,30 @@
 
 
 
+## 线程类
+
+### Thead
+
+- 基础的Thread类
+- 创建一个线程，设置线程的名称，启动一个线程
+
+### EventLoopThread
+
+- 将线程与eventloop绑定在一起
+
+- 构造函数 -> `threadFunc()` : 构造EvnetLoop ，上层回调函数进行线程初始化需要进行的操作，绑定 eventLoop；条件变量唤醒
+
+  ->`startLoop()`启动线程-> 启动loop
+
+### EventLoopThreadPool类
+
+- 封装EventLoopThread成一个线程池类、
+- 最上层的回调函数，向下注册
+- 自动的进行管理
+- 主Reactor 负责连接
+
+
+
 ## 网络类 && 连接类 
 
 ### InetAddress
@@ -128,10 +160,4 @@
 ### Buffers
 
 
-
-## 线程类
-
-### CurrentThead
-
-- 用于辅助EventLoop实现主从Reactor模式
 
