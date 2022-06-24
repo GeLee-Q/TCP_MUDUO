@@ -28,7 +28,7 @@ public:
 private:
     void handleRead();
 
-    EventLoop * loop_;
+    EventLoop * loop_; // 永远指向主reactor的指针
     Socket acceptSocket_;
     Channel acceptChannel_;
 

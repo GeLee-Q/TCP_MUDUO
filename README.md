@@ -15,7 +15,7 @@
   - [线程类](#线程类)
     - [Thead](#thead)
     - [EventLoopThread](#eventloopthread)
-    - [EventLoopThreadPool类](#eventloopthreadpool类)
+    - [EventLoopThreadPool](#eventloopthreadpool)
   - [网络类 && 连接类](#网络类--连接类)
     - [InetAddress](#inetaddress)
     - [Socket](#socket)
@@ -130,7 +130,7 @@
 
   ->`startLoop()`启动线程-> 启动loop
 
-### EventLoopThreadPool类
+### EventLoopThreadPool
 
 - 封装EventLoopThread成一个线程池类、
 - 最上层的回调函数，向下注册
