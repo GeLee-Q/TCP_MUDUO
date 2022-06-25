@@ -22,6 +22,10 @@ static EventLoop * CheckLoopNotNull(EventLoop * loop)
     return loop;
 }   
 
+/* 
+sockfd 接收连接以后返回的文件描述符
+ */
+
 TcpConnection::TcpConnection(EventLoop * loop,
                             const std::string & nameArg,
                             int sockfd,
@@ -116,6 +120,13 @@ void TcpConnection::sendInLoop(const void * data, size_t len)
         }
     }
 
+    /**
+     * 说明当前这一次write并没有把数据全部发送出去 剩余的数据需要保存到缓冲区当中
+     * 然后给channel注册EPOLLOUT事件，Poller发现tcp的发送缓冲区有空间后会通知
+     * 相应的sock->channel，调用channel对应注册的writeCallback_回调方法，
+     * channel的writeCallback_实际上就是TcpConnection设置的handleWrite回调，
+     * 把发送缓冲区outputBuffer_的内容全部发送完成
+     **/
 
     if (!faultError && remaining > 0)
     {

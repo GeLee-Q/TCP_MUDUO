@@ -22,6 +22,12 @@ class Socket;
  */
 
 
+/* 
+    shared_from_this 
+    传入传出自动调整引用计数
+    sockfd 接受的是acceptor接受的已连接的文件描述符
+ */
+
 class TcpConnection : noncopyable, public std::enable_shared_from_this<TcpConnection>
 {
 public:
@@ -46,12 +52,25 @@ public:
 
     void shutdown();
 
-    void setConnectionCallback(const ConnectionCallback & cb)
-    {connectionCallback_ = cb;}
+
+    /* 
+        channel中的回调 是读写关闭错误四种文件描述符的回调
+        这些回调是EventLoop中的doPendingFunctors()
+     */
+   void setConnectionCallback(const ConnectionCallback &cb)
+    { connectionCallback_ = cb; }
+    void setMessageCallback(const MessageCallback &cb)
+    { messageCallback_ = cb; }
+    void setWriteCompleteCallback(const WriteCompleteCallback &cb)
+    { writeCompleteCallback_ = cb; }
+    void setCloseCallback(const CloseCallback &cb)
+    { closeCallback_ = cb; }
+    void setHighWaterMarkCallback(const HighWaterMarkCallback &cb, size_t highWaterMark)
+    { highWaterMarkCallback_ = cb; highWaterMark_ = highWaterMark; }
 
     void connectEstablished();
     
-    void connectDestoryed();
+    void connectDestroyed();
 
 private:
     enum StateE
@@ -63,6 +82,11 @@ private:
     };
     void setState(StateE state){ state_ = state;}
 
+
+/* 
+    事件的读写关闭错误的回调
+    注册到channel上 ， handlEvent
+ */
     void handleRead(Timestamp receiveTime);
     void handleWrite();
     void handleClose();
@@ -75,7 +99,7 @@ private:
     EventLoop * loop_; // 单Reactor 指向baseloop 多Reactor 指向subloop
     const std::string name_;
     std::atomic_int state_;
-    bool reading_;
+    bool reading_;   
 
     // Socket Channel 这里和Acceptor类似    Acceptor => mainloop    TcpConnection => subloop
     std::unique_ptr<Socket> socket_;
@@ -84,7 +108,10 @@ private:
     const InetAddress localAddr_;
     const InetAddress peerAddr_;
 
-    // 回调函数
+    // 回调函数的传递
+    /* 
+       用户-> TcpServer->TcpConnection->Channel
+     */
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     WriteCompleteCallback writeCompleteCallback_;

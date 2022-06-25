@@ -1,3 +1,4 @@
+- [开发环境](#开发环境)
 - [CMake 工程构建](#cmake-工程构建)
 - [mylib](#mylib)
   - [辅助类：](#辅助类)
@@ -15,21 +16,27 @@
   - [线程类](#线程类)
     - [Thead](#thead)
     - [EventLoopThread](#eventloopthread)
-    - [EventLoopThreadPool](#eventloopthreadpool)
+    - [EventLoopThreadPool类](#eventloopthreadpool类)
   - [网络类 && 连接类](#网络类--连接类)
     - [InetAddress](#inetaddress)
     - [Socket](#socket)
-    - [Connection](#connection)
     - [Acceptor](#acceptor)
     - [Buffers](#buffers)
+    - [TcpConnection](#tcpconnection)
+
+# 开发环境
+
+- 5.10.16.3-microsoft-standard-WSL2
+- gcc version 9.3.0
+- cmake version 3.16.3
+
+
 
 # CMake 工程构建
 
 - src 源码文件
 - mylib muduo网络文件
 - 顶层CMakeLists.txt 构造项目
-
-
 
 
 
@@ -62,7 +69,24 @@
 
 ### TcpServer 
 
-​			
+- 用户回调函数->TcpConnection->EventLoop
+
+- 构造函数：
+
+  - 初始化EventLoop
+
+  - 创建新的accptor，指向主Loop，所以主loop处理链接请求
+
+  - 创建线程池
+  - 回调函数
+
+- `newConection()`
+
+  - 创建一个TcpConnection对象，并且设置相应的回调。
+  - 构建线程 和 subLoop
+  - 设置地址相关
+  - 构建哈希表 名称->TcpConnection
+  - 设置TcpConnection回调
 
 ### EventLoop
 
@@ -85,6 +109,8 @@
 - `doPendingFunctors()`将需要处理的回调函数换出，减少锁的临界区开销
 
 ​		同时避免死锁，保证加入的回调可以被迅速的执行
+
+
 
 ## Epoll类：
 
@@ -130,12 +156,12 @@
 
   ->`startLoop()`启动线程-> 启动loop
 
-### EventLoopThreadPool
+### EventLoopThreadPool类
 
-- 封装EventLoopThread成一个线程池类、
-- 最上层的回调函数，向下注册
-- 自动的进行管理
-- 主Reactor 负责连接
+- 封装EventLoopThread成一个线程池类。
+- 最上层的回调函数，向下注册。
+- 自动的进行管理。
+- 主Reactor 负责连接。
 
 
 
@@ -143,21 +169,42 @@
 
 ### InetAddress
 
-
+- 封装ip地址信息，端口信息。sockaddr 初始化
+- 网络字节序和本地字节序进行转换，格式化的输出信息
 
 ###  Socket
 
-
-
-### Connection
-
-
+- `bind` 绑定地址
+- `listen` 监听端口
+- `accept`  接收的同时保存客户端的socket信息
 
 ### Acceptor
 
-
+- 构造Socket
+- 构造Channel 绑定 socketFd
+- 指向主Reactor的EventLoop *
 
 ### Buffers
 
+- 用户和内核缓冲区的转折点
 
+- 接收和发送数据的缓冲区
+- 两个index 对buffer进行分区  
+
+### TcpConnection
+
+> TcpServer-> Acceptor -> accept 得到连接的accept
+>
+> ->TcpConnection 设置回调函数 -> 设置Channel -> Poller -> Channel回调
+
+- 主Reactor负责接收链接的请，会给已连接生成的一个TcpConnection对象，
+
+​		然后将这个connection分发给subLoop对象。
+
+- 设置回调
+
+  - EventLoop中的doPendingFuntors
+  - Channel中的handle event
+
+- 如果内核缓冲区满了，将会把要写的内容写入outbuffer中
 
